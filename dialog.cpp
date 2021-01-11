@@ -4,6 +4,14 @@
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent),dialog_show(true)
 {
+
+    config = new QSettings("localtrans.ini", QSettings::IniFormat);
+    jpfile = config->value("jpdic","jpdic.txt").toString();
+    zhfile = config->value("zhdic","zhdic.txt").toString();
+    config->setValue("jpdic",jpfile);
+    config->setValue("zhdic",zhfile);
+    config->sync();
+    //qDebug()<<jpfile<<zhfile;
     wigglyWidget = new WigglyWidget;
 
     QLineEdit *lineEdit = new QLineEdit;
@@ -80,10 +88,19 @@ Dialog::Dialog(QWidget *parent)
     }
     {
     QAction *pAction = new QAction(pMenu);
-    pAction->setText("reload texts");//设置文字
+    pAction->setText("reload text");//设置文字
+    pAction->setToolTip("reloads");
     //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
     pMenu->addAction(pAction);//action添加到menu中
-    connect(pAction,SIGNAL(triggered()),this,SLOT(StringReloads()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    connect(pAction,SIGNAL(triggered()),this,SLOT(stringReloads()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+    {
+    QAction *pAction = new QAction(pMenu);
+    pAction->setText("texts Chooser");//设置文字
+    pAction->setToolTip("jpdic.txt and zhdic.txt");
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    pMenu->addAction(pAction);//action添加到menu中
+    connect(pAction,SIGNAL(triggered()),this,SLOT(mapChooser()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
     }
     {
     pAction = new QAction(pMenu);
@@ -102,7 +119,6 @@ Dialog::Dialog(QWidget *parent)
     connect(pAction,SIGNAL(triggered()),this,SLOT(HideDialog()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
     }
 
-
     //创建一个QSyStemTrayIcon的对象.
     QSystemTrayIcon *m_trayIcon = new QSystemTrayIcon();
     //设置图标.
@@ -111,10 +127,23 @@ Dialog::Dialog(QWidget *parent)
     m_trayIcon->setContextMenu(pMenu);
     m_trayIcon->show();
 }
-
-void Dialog::StringReloads()
+void Dialog::stringReloads()
 {
 
+}
+void Dialog::mapChooser()
+{
+    QString jpdicNew = QFileDialog::getOpenFileName(NULL,QString::fromLocal8Bit("选择日文文本"),".","*.*");
+    if(jpdicNew!=""){
+        jpfile = jpdicNew;
+    }
+    QString zhdicNew = QFileDialog::getOpenFileName(NULL,QString::fromLocal8Bit("选择中文文本"),".","*.*");
+    if(zhdicNew!=""){
+        zhfile = zhdicNew;
+    }
+    config->setValue("jpdic",jpfile);
+    config->setValue("zhdic",zhfile);
+    config->sync();
 }
 
 void Dialog::HideDialog()

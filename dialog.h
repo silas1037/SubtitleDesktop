@@ -67,6 +67,8 @@
 #include <QFontDialog>
 #include <QFont>
 #include <QSystemTrayIcon>
+#include <QSettings>
+#include <QFileDialog>
 
 //! [0]
 class Dialog : public QDialog
@@ -82,12 +84,16 @@ public:
     QVBoxLayout *layout;
     QHBoxLayout *hl2;
     QPushButton * pb1;
+    QSettings *config;
+    QString jpfile;
+    QString zhfile;
 public slots:
     void resizedialog(int x, int y);
     void overScreen();
     void fontColorChooser();
     void fontChooser();
-    void StringReloads();
+    void mapChooser();
+    void stringReloads();
     void BGset();
     void HideDialog();
 
