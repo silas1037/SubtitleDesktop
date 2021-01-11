@@ -62,6 +62,9 @@ class Dialog : public QDialog
 public:
     explicit Dialog(QWidget *parent = nullptr);
 
+public slots:
+    void resizedialog(int x, int y);
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);

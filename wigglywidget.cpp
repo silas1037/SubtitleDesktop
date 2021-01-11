@@ -53,50 +53,90 @@
 #include <QFontMetrics>
 #include <QPainter>
 #include <QTimerEvent>
-
+#include <QDebug>
 //! [0]
 WigglyWidget::WigglyWidget(QWidget *parent)
     : QWidget(parent), step(0)
 {
-    setBackgroundRole(QPalette::Midlight);
-    setAutoFillBackground(true);
+    //setBackgroundRole(QPalette::Midlight);
+    setBackgroundRole(QPalette::Dark); //QPalette::Dark
+    setAttribute(Qt::WA_OpaquePaintEvent); //正确的设置：透明字背景
+    setStyleSheet("color: rgb(255, 255, 255);");
+    //setAutoFillBackground(true);
+    setWindowOpacity(1.0);
 
-    QFont newFont = font();
-    newFont.setPointSize(newFont.pointSize() + 20);
+    newFont = QFont("黑体",40,QFont::Bold);
+    //newFont.setPointSize(newFont.pointSize() + 10);
     setFont(newFont);
 
     timer.start(60, this);
+
 }
 //! [0]
+
 
 //! [1]
 void WigglyWidget::paintEvent(QPaintEvent * /* event */)
 //! [1] //! [2]
 {
-    static constexpr int sineTable[16] = {
-        0, 38, 71, 92, 100, 92, 71, 38, 0, -38, -71, -92, -100, -92, -71, -38
-    };
-
-    QFontMetrics metrics(font());
-    int x = (width() - metrics.horizontalAdvance(text)) / 2;
-    int y = (height() + metrics.ascent() - metrics.descent()) / 2;
+    //static constexpr int sineTable[16] = {
+    //    0, 38, 71, 92, 100, 92, 71, 38, 0, -38, -71, -92, -100, -92, -71, -38
+    //};
+    QFontMetrics metrics(newFont); //font()
+//    int x = (width() - metrics.horizontalAdvance(text)) / 2;
+//    int y = (height() + metrics.ascent() - metrics.descent()) / 2; //一行字的高度 = paint.descent - paint.ascent
+    int x = 0;
+    int y = 60; //(height() + metrics.ascent() - metrics.descent()) / 2;
     QColor color;
 //! [2]
 
 //! [3]
     QPainter painter(this);
+
+
+
 //! [3] //! [4]
     for (int i = 0; i < text.size(); ++i) {
-        int index = (step + i) % 16;
-        //color.setHsv((15 - index) * 16, 255, 191);
+        //int index = (step + i) % 16;
+//        color.setHsv((15 - index) * 16, 255, 191);
+        color.setRgb(200,200,200);
         painter.setPen(color);
-        painter.drawText(x, y - (( metrics.height()) / 400), //sineTable[index] *
+        painter.drawText(x, y , //sineTable[index] * //y - (( metrics.height()) / 400)
                          QString(text[i]));
         x += metrics.horizontalAdvance(text[i]);
+        if (x > screenX-60){
+            x = 0;
+            y += metrics.ascent() - metrics.descent()+30;
+        }
     }
+
+    //may
+    //painter.setBackgroundMode(Qt::TransparentMode); //OpaqueMode
+
 }
 //! [4]
+void WigglyWidget::setText(const QString &newText) {
+    text = newText;
+//    qDebug()<<width()<<height();
+    QFontMetrics metrics(newFont);
+    int x = 0;
+    int y = 60;
+    bool FlagWidthFull = false;
+    for (int i = 0; i < text.size(); ++i) {
+        x += metrics.horizontalAdvance(text[i]);
+        if (x > screenX-60){
+            FlagWidthFull=true;
+            x = 0;
+            y += metrics.ascent() - metrics.descent()+30;
+        }
+    }
 
+    if(FlagWidthFull){
+        x = screenX;
+    }
+    setMainXY(x,y+60); //145
+
+}
 //! [5]
 void WigglyWidget::timerEvent(QTimerEvent *event)
 //! [5] //! [6]

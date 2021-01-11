@@ -61,9 +61,12 @@ class WigglyWidget : public QWidget
 
 public:
     WigglyWidget(QWidget *parent = nullptr);
-
+    int screenX=1888;
+    QFont newFont;
+signals:
+    void setMainXY(int x,int y);
 public slots:
-    void setText(const QString &newText) { text = newText; }
+    void setText(const QString &newText);
 
 protected:
     void paintEvent(QPaintEvent *event) override;

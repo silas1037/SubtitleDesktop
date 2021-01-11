@@ -50,7 +50,7 @@
 
 #include "dialog.h"
 #include "wigglywidget.h"
-
+#include <QDebug>
 #include <QLineEdit>
 #include <QVBoxLayout>
 
@@ -66,17 +66,25 @@ Dialog::Dialog(QWidget *parent)
     layout->addWidget(lineEdit);
 
     connect(lineEdit, &QLineEdit::textChanged, wigglyWidget, &WigglyWidget::setText);
-    lineEdit->setText(tr("Hello world 你好!"));
+    connect(wigglyWidget, &WigglyWidget::setMainXY, this, &Dialog::resizedialog); //set xy
+    lineEdit->setText(tr("H移动中的鼠标位置相对于初始位置的相对位置"));
 
     setWindowTitle(tr("Wiggly"));
-    resize(360, 145);
+    resize(360, 145); //-280 -335
+    //qDebug()<<width()-360<<height()-145;
 
+    //setWindowOpacity(0.2);
     setAttribute(Qt::WA_TranslucentBackground, true);
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlag(Qt::FramelessWindowHint);
+
+
 }
 //! [0]
 
-
+void Dialog::resizedialog(int x, int y)
+{
+    resize(x+20,y);
+}
 
 void Dialog::mousePressEvent(QMouseEvent *event)
 {
