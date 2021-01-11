@@ -51,10 +51,23 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
+#include "wigglywidget.h"
 #include <QDialog>
 #include <QMouseEvent>
 #include <QDesktopWidget>
 #include <QApplication>
+#include <QMenu>
+#include <QDebug>
+#include <QLineEdit>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QColorDialog>
+#include <QFontDialog>
+#include <QFont>
+#include <QSystemTrayIcon>
+
 //! [0]
 class Dialog : public QDialog
 {
@@ -62,10 +75,22 @@ class Dialog : public QDialog
 
 public:
     explicit Dialog(QWidget *parent = nullptr);
-
+    QMenu *pMenu;
+    WigglyWidget *wigglyWidget;
+    QAction *pAction;
+    bool dialog_show;
+    QVBoxLayout *layout;
+    QHBoxLayout *hl2;
+    QPushButton * pb1;
 public slots:
     void resizedialog(int x, int y);
     void overScreen();
+    void fontColorChooser();
+    void fontChooser();
+    void StringReloads();
+    void BGset();
+    void HideDialog();
+
 //protected:
 //    void enterEvent(QEvent *);
 //    void leaveEvent(QEvent *);

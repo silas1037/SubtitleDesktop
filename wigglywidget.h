@@ -63,12 +63,24 @@ class WigglyWidget : public QWidget
 
 public:
     WigglyWidget(QWidget *parent = nullptr);
-    int screenX=1888;
-    QFont newFont;
+    int screenX=1366;//1888;
+    QFont subFont;
+    int y_init = 60; //y区域上边界60，不固定 fontheight+20
+    int dy_font = 30; //y字体间距，不固定30
+    int dx_screen = 60; //x区域边界，固定60
+    int dy_window = 80; //y窗口总边界，固定60
+    QString text;
+    QColor fontColor;
+    QColor getfontColor(){return fontColor;}
+    void setfontColor(QColor rgb){fontColor=rgb;}
+    QFont getfont(){return subFont;}
+    void setfont(QFont fontnew){subFont=fontnew;}
+    void ReSize();
 signals:
     void setMainXY(int x,int y);
 public slots:
     void setText(const QString &newText);
+    void setHideShow(int flagShow);
 protected:
     void enterEvent(QEvent *) override;
     void leaveEvent(QEvent *) override;
@@ -78,7 +90,6 @@ protected:
 
 private:
     QBasicTimer timer;
-    QString text;
     int step;
 };
 //! [0]

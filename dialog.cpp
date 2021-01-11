@@ -1,69 +1,40 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** BSD License Usage
-** Alternatively, you may use this file under the terms of the BSD license
-** as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
+﻿
 #include "dialog.h"
-#include "wigglywidget.h"
-#include <QDebug>
-#include <QLineEdit>
-#include <QVBoxLayout>
 
-//! [0]
 Dialog::Dialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent),dialog_show(true)
 {
-    WigglyWidget *wigglyWidget = new WigglyWidget;
-    QLineEdit *lineEdit = new QLineEdit;
+    wigglyWidget = new WigglyWidget;
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    QLineEdit *lineEdit = new QLineEdit;
+    lineEdit->setStyleSheet("background-color: rgb(102, 102, 102);"); //color: rgb(102, 102, 102);
+
+    QLineEdit *lineEdit2 = new QLineEdit;
+
+    pb1 = new QPushButton();
+    pb1->setVisible(false);
+    connect(pb1,&QPushButton::clicked,wigglyWidget, &WigglyWidget::show);
+    //connect(pb1,&QPushButton::clicked,pb1, &QPushButton::hide);
+
+    QCheckBox * cb1 = new QCheckBox();
+    cb1->setChecked(true);
+    connect(cb1,&QCheckBox::stateChanged,wigglyWidget, &WigglyWidget::setHideShow);
+    //cb1->setStyleSheet("background-color: red;color: rgb(102, 102, 102);selection-background-color: rgb(102, 102, 102);");
+
+    QRadioButton *rb1 = new QRadioButton();
+    rb1->setStyleSheet("background-color: rgb(102, 102, 102);"); //color: rgb(102, 102, 102);
+
+
+
+    layout = new QVBoxLayout(this);
     layout->addWidget(wigglyWidget);
-    //layout->addWidget(lineEdit);
+    layout->addWidget(lineEdit);
+    hl2=new QHBoxLayout(this);
+    //hl2->addWidget(lineEdit2);
+    //hl2->addWidget(pb1);
+    //hl2->addWidget(lineEdit);
+    //layout->addLayout(hl2);
+
 
     connect(lineEdit, &QLineEdit::textChanged, this, &Dialog::overScreen);
     connect(lineEdit, &QLineEdit::textChanged, wigglyWidget, &WigglyWidget::setText);
@@ -73,7 +44,7 @@ Dialog::Dialog(QWidget *parent)
     move(QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()/3,QRect(QApplication::desktop()->availableGeometry()).bottomRight().y());
     //setWindowTitle(tr("Wiggly"));
     resize(360, 145); //-280 -335
-    lineEdit->setText(tr("Bishojo Game"));
+    lineEdit->setText(QString::fromLocal8Bit("Bishojo Game 美少女游戏"));
 
 
     //透明度
@@ -89,8 +60,107 @@ Dialog::Dialog(QWidget *parent)
     show();
 
 
+    //右键菜单
+
+    //创建弹出菜单对象
+    pMenu = new QMenu(this);//pMenu 为类成员变量
+    {
+    QAction *pAction = new QAction(pMenu);
+    pAction->setText("font color");//设置文字
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    pMenu->addAction(pAction);//action添加到menu中
+    connect(pAction,SIGNAL(triggered()),this,SLOT(fontColorChooser()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+    {
+    QAction *pAction = new QAction(pMenu);
+    pAction->setText("font");//设置文字
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    pMenu->addAction(pAction);//action添加到menu中
+    connect(pAction,SIGNAL(triggered()),this,SLOT(fontChooser()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+    {
+    QAction *pAction = new QAction(pMenu);
+    pAction->setText("reload texts");//设置文字
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    pMenu->addAction(pAction);//action添加到menu中
+    connect(pAction,SIGNAL(triggered()),this,SLOT(StringReloads()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+    {
+    pAction = new QAction(pMenu);
+    pAction->setText("background");//设置文字
+    pAction->setCheckable(true);
+    pAction->setChecked(false);
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    pMenu->addAction(pAction);//action添加到menu中
+    connect(pAction,SIGNAL(triggered()),this,SLOT(BGset()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+    {
+    QAction *pAction = new QAction(pMenu);
+    pAction->setText("Hide/Show");//设置文字
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    pMenu->addAction(pAction);//action添加到menu中
+    connect(pAction,SIGNAL(triggered()),this,SLOT(HideDialog()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+
+
+    //创建一个QSyStemTrayIcon的对象.
+    QSystemTrayIcon *m_trayIcon = new QSystemTrayIcon();
+    //设置图标.
+    m_trayIcon->setIcon(QIcon(":/G.ico"));
+    //设置右键菜单.
+    m_trayIcon->setContextMenu(pMenu);
+    m_trayIcon->show();
 }
-//! [0]
+
+void Dialog::StringReloads()
+{
+
+}
+
+void Dialog::HideDialog()
+{
+    dialog_show=!dialog_show;
+    //pb1->setVisible(true);
+    wigglyWidget->setVisible(dialog_show);
+}
+
+void Dialog::BGset()
+{
+    if(pAction->isChecked())
+    {
+        //透明
+        setAttribute(Qt::WA_TranslucentBackground, false);//需要设置
+    //    setAttribute(Qt::WA_OpaquePaintEvent);
+        setAttribute(Qt::WA_PaintOnScreen,false);
+    }
+    else{
+        //透明
+        setAttribute(Qt::WA_TranslucentBackground, true);//需要设置
+    //    setAttribute(Qt::WA_OpaquePaintEvent);
+        setAttribute(Qt::WA_PaintOnScreen,true);
+    }
+}
+
+void Dialog::fontColorChooser(){
+    QColor color = QColorDialog::getRgba(wigglyWidget->getfontColor().rgba());
+    if(color.isValid())
+        wigglyWidget->setfontColor(color);
+    //qDebug()<<color;
+}
+
+void Dialog::fontChooser()
+{
+    bool ok;
+    QFont fontback = QFontDialog::getFont(&ok, wigglyWidget->getfont());
+
+//    qDebug()<<"test2"<<fontdia;
+    if(ok){
+        fontback.setBold(true);
+        //qDebug()<<"test2"<<wigglyWidget->getfont()<<endl<<fontback;
+        wigglyWidget->setfont(fontback); //seems bug
+        wigglyWidget->ReSize();
+    }
+}
 
 void Dialog::resizedialog(int x, int y)
 {
@@ -114,6 +184,10 @@ void Dialog::mousePressEvent(QMouseEvent *event)
         m_startPoint = event->globalPos();
         //记录窗体的世界坐标.
         m_windowPoint = this->frameGeometry().topLeft();
+    }
+    if (event->button() == Qt::RightButton){
+        //下面执行弹出操作
+                pMenu->popup(event->globalPos());
     }
 }
 void Dialog::mouseMoveEvent(QMouseEvent *event)

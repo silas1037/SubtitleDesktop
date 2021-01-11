@@ -65,55 +65,47 @@ WigglyWidget::WigglyWidget(QWidget *parent)
     //setAutoFillBackground(true);
     setWindowOpacity(1.0);
 
-    newFont = QFont("黑体",40,QFont::Bold);
+    subFont = QFont("黑体",40,QFont::Bold);
     //newFont.setPointSize(newFont.pointSize() + 10);
-    setFont(newFont);
+    setFont(subFont);
     timer.start(60, this);
     screenX=QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()-30;
 
+    fontColor = QColor(200,200,200);
 }
-//! [0]
+
+
 void WigglyWidget::enterEvent(QEvent *)
 {
-    qDebug()<<"鼠标移入";
+    ReSize();
+//    qDebug()<<"鼠标移入";
 }
 void WigglyWidget::leaveEvent(QEvent *)
 {
-    qDebug()<<"鼠标移出";
+//    qDebug()<<"鼠标移出";
 }
 
 //! [1]
 void WigglyWidget::paintEvent(QPaintEvent * /* event */)
-//! [1] //! [2]
 {
-    //static constexpr int sineTable[16] = {
-    //    0, 38, 71, 92, 100, 92, 71, 38, 0, -38, -71, -92, -100, -92, -71, -38
-    //};
-    QFontMetrics metrics(newFont); //font()
+    //频繁绘制不需要窗口尺寸绘制
+    //qDebug()<<subFont;
+    QFontMetrics metrics(subFont); //font()
 //    int x = (width() - metrics.horizontalAdvance(text)) / 2;
 //    int y = (height() + metrics.ascent() - metrics.descent()) / 2; //一行字的高度 = paint.descent - paint.ascent
     int x = 0;
-    int y = 60; //(height() + metrics.ascent() - metrics.descent()) / 2;
-    QColor color;
-//! [2]
-
-//! [3]
+    int y = y_init; //(height() + metrics.ascent() - metrics.descent()) / 2;
+    //QColor color;
     QPainter painter(this);
-
-
-
-//! [3] //! [4]
+    setFont(subFont);
     for (int i = 0; i < text.size(); ++i) {
-        //int index = (step + i) % 16;
-//        color.setHsv((15 - index) * 16, 255, 191);
-        color.setRgb(200,200,200);
-        painter.setPen(color);
+        painter.setPen(fontColor);
         painter.drawText(x, y , //sineTable[index] * //y - (( metrics.height()) / 400)
                          QString(text[i]));
         x += metrics.horizontalAdvance(text[i]);
-        if (x > screenX-60){
+        if (x > screenX-dx_screen){
             x = 0;
-            y += metrics.ascent() - metrics.descent()+30;
+            y += metrics.ascent() - metrics.descent()+dy_font; //
         }
     }
 
@@ -121,32 +113,36 @@ void WigglyWidget::paintEvent(QPaintEvent * /* event */)
     //painter.setBackgroundMode(Qt::TransparentMode); //OpaqueMode
 
 }
-//! [4]
-void WigglyWidget::setText(const QString &newText) {
-    text = newText;
-//    qDebug()<<width()<<height();
-    QFontMetrics metrics(newFont);
+void WigglyWidget::ReSize()
+{
+    screenX=QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()-30;
+
+
+    QFontMetrics metrics(subFont);
+    //qDebug()<<"y0"<<metrics.ascent() - metrics.descent();
+    y_init = metrics.ascent() - metrics.descent()+20;
+
     int x = 0;
-    int y = 60;
+    int y = y_init; //
     bool FlagWidthFull = false;
     for (int i = 0; i < text.size(); ++i) {
         x += metrics.horizontalAdvance(text[i]);
-        if (x > screenX-60){
+        if (x > screenX-dx_screen){ //
             FlagWidthFull=true;
             x = 0;
-            y += metrics.ascent() - metrics.descent()+30;
+            y += metrics.ascent() - metrics.descent()+dy_font; //
         }
     }
-
-    if(FlagWidthFull){
-        x = screenX;
-    }
-    setMainXY(x,y+60); //145
-
+    setMainXY(FlagWidthFull?screenX:x,y+dy_window); //145
 }
-//! [5]
+void WigglyWidget::setText(const QString &newText="")
+{
+    //赋值后仅需要窗口尺寸绘制
+    text = newText;
+    ReSize();
+}
+
 void WigglyWidget::timerEvent(QTimerEvent *event)
-//! [5] //! [6]
 {
     if (event->timerId() == timer.timerId()) {
         ++step;
@@ -155,4 +151,18 @@ void WigglyWidget::timerEvent(QTimerEvent *event)
         QWidget::timerEvent(event);
     }
 //! [6]
+}
+
+
+void WigglyWidget::setHideShow(int flagShow)
+{
+    //qDebug()<<flagShow;
+    if(flagShow){
+        show();
+        //qDebug()<<"show";
+    }
+    else{
+        hide();
+        //qDebug()<<"hide";
+    }
 }

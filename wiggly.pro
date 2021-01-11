@@ -9,3 +9,9 @@ SOURCES       = wigglywidget.cpp \
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/widgets/widgets/wiggly
 INSTALLS += target
+
+DISTFILES += \
+    G.ico
+
+RESOURCES += \
+    rc.qrc
