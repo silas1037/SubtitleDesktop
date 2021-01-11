@@ -63,19 +63,30 @@ Dialog::Dialog(QWidget *parent)
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(wigglyWidget);
-    layout->addWidget(lineEdit);
+    //layout->addWidget(lineEdit);
 
+    connect(lineEdit, &QLineEdit::textChanged, this, &Dialog::overScreen);
     connect(lineEdit, &QLineEdit::textChanged, wigglyWidget, &WigglyWidget::setText);
     connect(wigglyWidget, &WigglyWidget::setMainXY, this, &Dialog::resizedialog); //set xy
-    lineEdit->setText(tr("H移动中的鼠标位置相对于初始位置的相对位置"));
 
-    setWindowTitle(tr("Wiggly"));
+    //初始位置
+    move(QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()/3,QRect(QApplication::desktop()->availableGeometry()).bottomRight().y());
+    //setWindowTitle(tr("Wiggly"));
     resize(360, 145); //-280 -335
-    //qDebug()<<width()-360<<height()-145;
+    lineEdit->setText(tr("Bishojo Game"));
 
+
+    //透明度
     //setWindowOpacity(0.2);
-    setAttribute(Qt::WA_TranslucentBackground, true);
+    //透明
+    setAttribute(Qt::WA_TranslucentBackground, true);//需要设置
+//    setAttribute(Qt::WA_OpaquePaintEvent);
+    setAttribute(Qt::WA_PaintOnScreen);
+    //无边框
     setWindowFlag(Qt::FramelessWindowHint);
+    //置顶
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    show();
 
 
 }
@@ -85,7 +96,14 @@ void Dialog::resizedialog(int x, int y)
 {
     resize(x+20,y);
 }
-
+//void Dialog::enterEvent(QEvent *)
+//{
+//    qDebug()<<"鼠标移入";
+//}
+//void Dialog::leaveEvent(QEvent *)
+//{
+//    qDebug()<<"鼠标移出";
+//}
 void Dialog::mousePressEvent(QMouseEvent *event)
 {
     //当鼠标左键点击时.
@@ -104,10 +122,86 @@ void Dialog::mouseMoveEvent(QMouseEvent *event)
     {
         //移动中的鼠标位置相对于初始位置的相对位置.
         QPoint relativePos = event->globalPos() - m_startPoint;
+
         //然后移动窗体即可.
-        this->move(m_windowPoint + relativePos );
+        //this->move(m_windowPoint + relativePos );
+
+        //方法1：
+                QDesktopWidget* desktop = QApplication::desktop();
+                QRect windowRect(desktop->availableGeometry());
+                QRect widgetRect(this->geometry());
+        //以下是防止窗口拖出可见范围外
+        QPoint point=m_windowPoint + relativePos ;
+                //左边
+                if (point.x() <= 0)
+                {
+                    point = QPoint(0,point.y());
+                }
+                //右边
+                int y = windowRect.bottomRight().y() - this->size().height();
+                if (point.y() >= y && widgetRect.topLeft().y() >= y)
+                {
+                    point = QPoint(point.x(),y);
+                }
+                //上边
+                if (point.y() <= 0)
+                {
+                    point = QPoint(point.x(),0);
+                }
+                //下边
+                int x = windowRect.bottomRight().x() - this->size().width();
+                if (point.x() >= x && widgetRect.topLeft().x() >= x)
+                {
+                    point = QPoint(x,point.y());
+                }
+                move(point);
+
+
+
+
+                //方法2：
+                //可以通过判断QRect windowRect是否包含（contains） QRect widgetRect 再移动
+                //这里没有给出代码
     }
 }
+void Dialog::overScreen()
+{
+
+    m_windowPoint = this->frameGeometry().topLeft();
+    //方法1：
+            QDesktopWidget* desktop = QApplication::desktop();
+            QRect windowRect(desktop->availableGeometry());
+            QRect widgetRect(this->geometry());
+
+            //qDebug()<<QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()<<QRect(QApplication::desktop()->availableGeometry()).bottomRight().y();
+
+    //以下是防止窗口拖出可见范围外
+    QPoint point=m_windowPoint;
+            //左边
+            if (point.x() <= 0)
+            {
+                point = QPoint(0,point.y());
+            }
+            //右边
+            int y = windowRect.bottomRight().y() - this->size().height();
+            if (point.y() >= y && widgetRect.topLeft().y() >= y)
+            {
+                point = QPoint(point.x(),y);
+            }
+            //上边
+            if (point.y() <= 0)
+            {
+                point = QPoint(point.x(),0);
+            }
+            //下边
+            int x = windowRect.bottomRight().x() - this->size().width();
+            if (point.x() >= x && widgetRect.topLeft().x() >= x)
+            {
+                point = QPoint(x,point.y());
+            }
+            move(point);
+}
+
 void Dialog::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)

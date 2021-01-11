@@ -53,7 +53,9 @@
 
 #include <QBasicTimer>
 #include <QWidget>
-
+#include <QMouseEvent>
+#include <QDesktopWidget>
+#include <QApplication>
 //! [0]
 class WigglyWidget : public QWidget
 {
@@ -67,7 +69,9 @@ signals:
     void setMainXY(int x,int y);
 public slots:
     void setText(const QString &newText);
-
+protected:
+    void enterEvent(QEvent *) override;
+    void leaveEvent(QEvent *) override;
 protected:
     void paintEvent(QPaintEvent *event) override;
     void timerEvent(QTimerEvent *event) override;

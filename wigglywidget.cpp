@@ -68,12 +68,19 @@ WigglyWidget::WigglyWidget(QWidget *parent)
     newFont = QFont("黑体",40,QFont::Bold);
     //newFont.setPointSize(newFont.pointSize() + 10);
     setFont(newFont);
-
     timer.start(60, this);
+    screenX=QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()-30;
 
 }
 //! [0]
-
+void WigglyWidget::enterEvent(QEvent *)
+{
+    qDebug()<<"鼠标移入";
+}
+void WigglyWidget::leaveEvent(QEvent *)
+{
+    qDebug()<<"鼠标移出";
+}
 
 //! [1]
 void WigglyWidget::paintEvent(QPaintEvent * /* event */)

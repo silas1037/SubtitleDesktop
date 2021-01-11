@@ -53,7 +53,8 @@
 
 #include <QDialog>
 #include <QMouseEvent>
-
+#include <QDesktopWidget>
+#include <QApplication>
 //! [0]
 class Dialog : public QDialog
 {
@@ -64,7 +65,10 @@ public:
 
 public slots:
     void resizedialog(int x, int y);
-
+    void overScreen();
+//protected:
+//    void enterEvent(QEvent *);
+//    void leaveEvent(QEvent *);
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
