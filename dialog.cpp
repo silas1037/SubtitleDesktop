@@ -64,7 +64,7 @@ Dialog::Dialog(QWidget *parent)
     //无边框
     setWindowFlag(Qt::FramelessWindowHint);
     //置顶
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint | Qt::Tool);
     show();
 
 
@@ -72,20 +72,65 @@ Dialog::Dialog(QWidget *parent)
 
     //创建弹出菜单对象
     pMenu = new QMenu(this);//pMenu 为类成员变量
+    strokeMenu = new QMenu(this);
+
     {
     QAction *pAction = new QAction(pMenu);
     pAction->setText("font color");//设置文字
     //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
     pMenu->addAction(pAction);//action添加到menu中
-    connect(pAction,SIGNAL(triggered()),this,SLOT(fontColorChooser()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    connect(pAction,SIGNAL(triggered()),wigglyWidget,SLOT(setfontColor()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
     }
     {
     QAction *pAction = new QAction(pMenu);
     pAction->setText("font");//设置文字
     //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
     pMenu->addAction(pAction);//action添加到menu中
-    connect(pAction,SIGNAL(triggered()),this,SLOT(fontChooser()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    connect(pAction,SIGNAL(triggered()),wigglyWidget,SLOT(setfont()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
     }
+
+
+    {
+    QAction *pAction = new QAction(pMenu);
+    pAction->setText("stroke");//设置文字
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    pMenu->addAction(pAction);//action添加到menu中
+    pAction->setMenu(strokeMenu);
+    //connect(pAction,SIGNAL(triggered()),this,SLOT(fontChooser()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+    {
+    QAction *pAction = new QAction(strokeMenu);
+    pAction->setText("show/hide");//设置文字
+    pAction->setCheckable(true);
+    pAction->setChecked(true);
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    strokeMenu->addAction(pAction);//action添加到menu中
+    connect(pAction,SIGNAL(triggered()),wigglyWidget,SLOT(setstrokeShow()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+    {
+    QAction *pAction = new QAction(strokeMenu);
+    pAction->setText("stroke width");//设置文字
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    strokeMenu->addAction(pAction);//action添加到menu中
+    connect(pAction,SIGNAL(triggered()),wigglyWidget,SLOT(setstrokeWidth()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+    {
+    QAction *pAction = new QAction(strokeMenu);
+    pAction->setText("stroke color");//设置文字
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    strokeMenu->addAction(pAction);//action添加到menu中
+    connect(pAction,SIGNAL(triggered()),wigglyWidget,SLOT(strokeColorChooser()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+    {
+    QAction *pAction = new QAction(strokeMenu);
+    pAction->setText("auto color");//设置文字
+    pAction->setCheckable(true);
+    pAction->setChecked(true);
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    strokeMenu->addAction(pAction);//action添加到menu中
+    connect(pAction,SIGNAL(triggered()),wigglyWidget,SLOT(setautoStrokeColor()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+/*****/
     {
     QAction *pAction = new QAction(pMenu);
     pAction->setText("reload text");//设置文字
@@ -118,6 +163,10 @@ Dialog::Dialog(QWidget *parent)
     pMenu->addAction(pAction);//action添加到menu中
     connect(pAction,SIGNAL(triggered()),this,SLOT(HideDialog()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
     }
+
+    //主菜单添加子菜单
+    pMenu->addMenu(strokeMenu);
+
 
     //创建一个QSyStemTrayIcon的对象.
     QSystemTrayIcon *m_trayIcon = new QSystemTrayIcon();
@@ -171,28 +220,28 @@ void Dialog::BGset()
     }
 }
 
-void Dialog::fontColorChooser(){
-    QColor color = QColorDialog::getRgba(wigglyWidget->getfontColor().rgba());
-    if(color.isValid())
-        wigglyWidget->setfontColor(color);
-    //qDebug()<<color;
-}
+//void Dialog::fontColorChooser(){
+//    QColor color = QColorDialog::getRgba(wigglyWidget->getfontColor().rgba());
+//    if(color.isValid())
+//        wigglyWidget->setfontColor(color);
+//    //qDebug()<<color;
+//}
 
-void Dialog::fontChooser()
-{
-    bool ok;
-    QFont fontback = QFontDialog::getFont(&ok, wigglyWidget->getfont());
+//void Dialog::fontChooser()
+//{
+//    bool ok;
+//    QFont fontback = QFontDialog::getFont(&ok, wigglyWidget->getfont());
 
-//    qDebug()<<"test2"<<fontdia;
-    if(ok){
-        fontback.setBold(true);
-        //qDebug()<<"test2"<<wigglyWidget->getfont()<<endl<<fontback;
-        wigglyWidget->setfont(fontback); //seems bug
-        wigglyWidget->ReSize();
-    }
-}
+////    qDebug()<<"test2"<<fontdia;
+//    if(ok){
+//        fontback.setBold(true);
+//        //qDebug()<<"test2"<<wigglyWidget->getfont()<<endl<<fontback;
+//        wigglyWidget->setfont(fontback); //seems bug
+//        wigglyWidget->ReSize();
+//    }
+//}
 
-void Dialog::resizedialog(int x, int y)
+void Dialog::resizedialog(float x, float y)
 {
     resize(x+20,y);
 }

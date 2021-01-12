@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
@@ -54,7 +54,8 @@
 #include <QPainter>
 #include <QTimerEvent>
 #include <QDebug>
-//! [0]
+#include <QPainterPath>
+
 WigglyWidget::WigglyWidget(QWidget *parent)
     : QWidget(parent), step(0)
 {
@@ -65,13 +66,14 @@ WigglyWidget::WigglyWidget(QWidget *parent)
     //setAutoFillBackground(true);
     setWindowOpacity(1.0);
 
-    subFont = QFont("黑体",40,QFont::Bold);
+    subFont = QFont(QString::fromLocal8Bit("黑体"),40,QFont::Bold);
     //newFont.setPointSize(newFont.pointSize() + 10);
     setFont(subFont);
     timer.start(60, this);
     screenX=QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()-30;
 
     fontColor = QColor(200,200,200);
+    strokeColor = QColor(0,0,0);
 }
 
 
@@ -97,11 +99,33 @@ void WigglyWidget::paintEvent(QPaintEvent * /* event */)
     int y = y_init; //(height() + metrics.ascent() - metrics.descent()) / 2;
     //QColor color;
     QPainter painter(this);
+    //QPainterPath painter(this);
     setFont(subFont);
+
+    // 设置抗锯齿
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    // 设置绘制路径
+    QPainterPath path;
+
+    // 添加轮廓
+    QPen pen;
+    pen.setWidth(strokeWidth);
+    pen.setColor(strokeColor);
+
     for (int i = 0; i < text.size(); ++i) {
-        painter.setPen(fontColor);
+        //painter.setPen(fontColor);
+        painter.setPen(QPen(fontColor, 0.2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+
         painter.drawText(x, y , //sineTable[index] * //y - (( metrics.height()) / 400)
                          QString(text[i]));
+
+        if(strokeShow) path.addText(x, y, subFont, QString(text[i]));
+        //test
+        //path.addRect(QRect(x, y - metrics.height(), metrics.width(QString(text[i])), metrics.height()).adjusted(-10, -10, 10, 10));
+
+        painter.strokePath(path, pen);
+
         x += metrics.horizontalAdvance(text[i]);
         if (x > screenX-dx_screen){
             x = 0;
@@ -134,6 +158,7 @@ void WigglyWidget::ReSize()
             y += metrics.ascent() - metrics.descent()+dy_font; //
         }
     }
+    qDebug()<<"resize"<<(FlagWidthFull?screenX:x)<<y+dy_window;
     setMainXY(FlagWidthFull?screenX:x,y+dy_window); //145
 }
 void WigglyWidget::setText(const QString &newText="")
@@ -160,15 +185,15 @@ void WigglyWidget::timerEvent(QTimerEvent *event)
 }
 
 
-void WigglyWidget::setHideShow(int flagShow)
-{
-    //qDebug()<<flagShow;
-    if(flagShow){
-        show();
-        //qDebug()<<"show";
-    }
-    else{
-        hide();
-        //qDebug()<<"hide";
-    }
-}
+//void WigglyWidget::setHideShow(int flagShow)
+//{
+//    //qDebug()<<flagShow;
+//    if(flagShow){
+//        show();
+//        //qDebug()<<"show";
+//    }
+//    else{
+//        hide();
+//        //qDebug()<<"hide";
+//    }
+//}

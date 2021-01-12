@@ -1,17 +1,20 @@
 QT += widgets
 
 
-DEFINES+=DLLFLAG
-TEMPLATE = lib
-TARGET=LocalSub
-HEADERS       = LocalSub.h
-SOURCES       = LocalSub.cpp \
-                LocalSubImpl.cpp
+#DEFINES+=DLLFLAG
+#TEMPLATE = lib
+#TARGET=LocalSub
+#HEADERS       += LocalSub.h
+#SOURCES       += \
+#LocalSub.cpp \
+#                LocalSubImpl.cpp \
+##                VisualExtension.cpp
 
+LIBS+=-luser32
 
-HEADERS       = wigglywidget.h \
+HEADERS       += wigglywidget.h \
                 dialog.h
-SOURCES       = wigglywidget.cpp \
+SOURCES       += wigglywidget.cpp \
                 dialog.cpp \
                 main.cpp
 

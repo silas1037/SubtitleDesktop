@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
@@ -80,6 +80,8 @@ public:
     QMenu *pMenu;
     WigglyWidget *wigglyWidget;
     QAction *pAction;
+    QMenu *strokeMenu;
+
     bool dialog_show;
     QVBoxLayout *layout;
     QHBoxLayout *hl2;
@@ -88,10 +90,10 @@ public:
     QString jpfile;
     QString zhfile;
 public slots:
-    void resizedialog(int x, int y);
+    void resizedialog(float x, float y);
     void overScreen();
-    void fontColorChooser();
-    void fontChooser();
+    //void fontColorChooser();
+    //void fontChooser();
     void mapChooser();
     void stringReloads();
     void BGset();

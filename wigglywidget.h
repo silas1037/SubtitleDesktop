@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
@@ -56,7 +56,10 @@
 #include <QMouseEvent>
 #include <QDesktopWidget>
 #include <QApplication>
-//! [0]
+#include <QColorDialog>
+#include <QFontDialog>
+#include <QInputDialog>
+#include <QDebug>
 class WigglyWidget : public QWidget
 {
     Q_OBJECT
@@ -71,17 +74,43 @@ public:
     int dy_window = 80; //y窗口总边界，固定60
     QString text;
     QColor fontColor;
-    QColor getfontColor(){return fontColor;}
-    void setfontColor(QColor rgb){fontColor=rgb;}
-    QFont getfont(){return subFont;}
-    void setfont(QFont fontnew){subFont=fontnew;}
+
+
+    bool strokeShow =true;
+    bool autoStrokeColor=true;
+    QColor strokeColor;
+    int strokeWidth = 1;
+
     void ReSize();
     void setWText(std::wstring newText);
 signals:
     void setMainXY(int x,int y);
 public slots:
+    void setfontColor(){
+        QColor rgb = QColorDialog::getRgba(fontColor.rgba());
+        if(rgb.isValid()) fontColor=rgb;
+        if(autoStrokeColor){ strokeColor.setRgb((rgb.red()<128)?255:0,(rgb.green()<128)?255:0,(rgb.blue()<128)?255:0);
+        strokeColor=strokeColor.darker();}
+    }
+    void setfont(){
+        bool ok;
+        QFont fontback = QFontDialog::getFont(&ok, subFont);
+        if(ok){ fontback.setBold(true);subFont=fontback;}
+    }
+    void strokeColorChooser(){
+        QColor rgb = QColorDialog::getRgba(fontColor.rgba());
+        if(rgb.isValid()) strokeColor=rgb;
+    }
+    void setstrokeShow(){strokeShow=!strokeShow;}
+    void setautoStrokeColor(){autoStrokeColor=!autoStrokeColor;}
+    void setstrokeWidth(){bool ok=false;
+         int wid = QInputDialog::getInt(this,QString::fromLocal8Bit("设置描边线宽"),QString::fromLocal8Bit("轮廓宽度（默认1）"),strokeWidth,1,100,1,&ok);
+         if(ok) strokeWidth=wid;
+    }
+
     void setText(const QString &newText);
-    void setHideShow(int flagShow);
+    void setHideShow(int flagShow){ flagShow?show():hide();}
+
 protected:
     void enterEvent(QEvent *) override;
     void leaveEvent(QEvent *) override;
