@@ -76,6 +76,7 @@ public:
     QFont getfont(){return subFont;}
     void setfont(QFont fontnew){subFont=fontnew;}
     void ReSize();
+    void setWText(std::wstring newText);
 signals:
     void setMainXY(int x,int y);
 public slots:

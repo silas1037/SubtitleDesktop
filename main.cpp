@@ -49,7 +49,7 @@
 ****************************************************************************/
 
 #include "dialog.h"
-
+#ifndef DLLFLAG
 #include <QApplication>
 
 int main(int argc, char *argv[])
@@ -61,3 +61,4 @@ int main(int argc, char *argv[])
 
     return app.exec();
 }
+#endif

@@ -115,6 +115,7 @@ void WigglyWidget::paintEvent(QPaintEvent * /* event */)
 }
 void WigglyWidget::ReSize()
 {
+    //Textractor 均不能工作
     screenX=QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()-30;
 
 
@@ -141,7 +142,12 @@ void WigglyWidget::setText(const QString &newText="")
     text = newText;
     ReSize();
 }
-
+void WigglyWidget::setWText(std::wstring newText)
+{
+    //赋值后仅需要窗口尺寸绘制
+    text = QString::fromStdWString(newText);
+    setText(text);
+}
 void WigglyWidget::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == timer.timerId()) {

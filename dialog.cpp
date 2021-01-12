@@ -155,6 +155,7 @@ void Dialog::HideDialog()
 
 void Dialog::BGset()
 {
+    //5.13 不能工作
     if(pAction->isChecked())
     {
         //透明
