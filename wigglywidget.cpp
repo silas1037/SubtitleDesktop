@@ -77,15 +77,15 @@ WigglyWidget::WigglyWidget(QWidget *parent)
 }
 
 
-void WigglyWidget::enterEvent(QEvent *)
-{
-    ReSize();
-//    qDebug()<<"鼠标移入";
-}
-void WigglyWidget::leaveEvent(QEvent *)
-{
-//    qDebug()<<"鼠标移出";
-}
+//void WigglyWidget::enterEvent(QEvent *)
+//{
+//    ReSize();
+////    qDebug()<<"鼠标移入";
+//}
+//void WigglyWidget::leaveEvent(QEvent *)
+//{
+////    qDebug()<<"鼠标移出";
+//}
 
 //! [1]
 void WigglyWidget::paintEvent(QPaintEvent * /* event */)
@@ -161,18 +161,18 @@ void WigglyWidget::ReSize()
     qDebug()<<"resize"<<(FlagWidthFull?screenX:x)<<y+dy_window;
     setMainXY(FlagWidthFull?screenX:x,y+dy_window); //145
 }
-void WigglyWidget::setText(const QString &newText="")
-{
-    //赋值后仅需要窗口尺寸绘制
-    text = newText;
-    ReSize();
-}
-void WigglyWidget::setWText(std::wstring newText)
-{
-    //赋值后仅需要窗口尺寸绘制
-    text = QString::fromStdWString(newText);
-    setText(text);
-}
+//void WigglyWidget::setText(const QString &newText="")
+//{
+//    //赋值后仅需要窗口尺寸绘制
+//    text = newText;
+//    ReSize();
+//}
+//void WigglyWidget::setWText(std::wstring newText)
+//{
+//    //赋值后仅需要窗口尺寸绘制
+//    text = QString::fromStdWString(newText);
+//    setText(QString::fromStdWString(newText));
+//}
 void WigglyWidget::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == timer.timerId()) {

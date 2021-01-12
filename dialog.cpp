@@ -14,10 +14,9 @@ Dialog::Dialog(QWidget *parent)
     //qDebug()<<jpfile<<zhfile;
     wigglyWidget = new WigglyWidget;
 
-    QLineEdit *lineEdit = new QLineEdit;
+    lineEdit = new QLineEdit;
     lineEdit->setStyleSheet("background-color: rgb(102, 102, 102);"); //color: rgb(102, 102, 102);
-
-    QLineEdit *lineEdit2 = new QLineEdit;
+    lineEdit->setVisible(false);
 
     pb1 = new QPushButton();
     pb1->setVisible(false);
@@ -35,14 +34,14 @@ Dialog::Dialog(QWidget *parent)
 
 
     layout = new QVBoxLayout(this);
-    layout->addWidget(wigglyWidget);
     layout->addWidget(lineEdit);
+    layout->addWidget(wigglyWidget);
+
     hl2=new QHBoxLayout(this);
     //hl2->addWidget(lineEdit2);
     //hl2->addWidget(pb1);
     //hl2->addWidget(lineEdit);
     //layout->addLayout(hl2);
-
 
     connect(lineEdit, &QLineEdit::textChanged, this, &Dialog::overScreen);
     connect(lineEdit, &QLineEdit::textChanged, wigglyWidget, &WigglyWidget::setText);
@@ -155,6 +154,15 @@ Dialog::Dialog(QWidget *parent)
     //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
     pMenu->addAction(pAction);//action添加到menu中
     connect(pAction,SIGNAL(triggered()),this,SLOT(BGset()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    }
+    {
+    QAction *pAction = new QAction(pMenu);
+    pAction->setText("debug");//设置文字
+    pAction->setCheckable(true);
+    pAction->setChecked(false);
+    //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
+    pMenu->addAction(pAction);//action添加到menu中
+    connect(pAction,SIGNAL(triggered()),this,SLOT(setDebug()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
     }
     {
     QAction *pAction = new QAction(pMenu);

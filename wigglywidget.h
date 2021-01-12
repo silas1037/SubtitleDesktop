@@ -83,7 +83,7 @@ public:
     bool widvis = true;
 
     void ReSize();
-    void setWText(std::wstring newText);
+    void setWText(std::wstring newText){setText(QString::fromStdWString(newText));}
 signals:
     void setMainXY(int x,int y);
 public slots:
@@ -110,12 +110,12 @@ public slots:
          if(ok) strokeWidth=wid;
     }
 
-    void setText(const QString &newText);
+    void setText(const QString &newText){text = newText;ReSize();}
     void setHideShow(int flagShow){ flagShow?show():hide();}
 
 protected:
-    void enterEvent(QEvent *) override;
-    void leaveEvent(QEvent *) override;
+    void enterEvent(QEvent *) override{}
+    void leaveEvent(QEvent *) override{}
 protected:
     void paintEvent(QPaintEvent *event) override;
     void timerEvent(QTimerEvent *event) override;

@@ -88,7 +88,12 @@ public:
     QSettings *config;
     QString jpfile;
     QString zhfile;
+
+    QLineEdit *lineEdit;
+    bool debug=false;
+
 public slots:
+    void setDebug(){debug=!debug;/*debug?layout->addWidget(lineEdit):layout->removeWidget(lineEdit);*/ lineEdit->setVisible(debug);}
     void resizedialog(float x, float y);
     void overScreen();
     void mapChooser();
