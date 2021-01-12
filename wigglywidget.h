@@ -75,17 +75,19 @@ public:
     QString text;
     QColor fontColor;
 
-
     bool strokeShow =true;
     bool autoStrokeColor=true;
     QColor strokeColor;
     int strokeWidth = 1;
+
+    bool widvis = true;
 
     void ReSize();
     void setWText(std::wstring newText);
 signals:
     void setMainXY(int x,int y);
 public slots:
+    void widgetVis(){widvis=!widvis;setVisible(widvis);}
     void setfontColor(){
         QColor rgb = QColorDialog::getRgba(fontColor.rgba());
         if(rgb.isValid()) fontColor=rgb;

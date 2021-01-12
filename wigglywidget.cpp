@@ -183,17 +183,3 @@ void WigglyWidget::timerEvent(QTimerEvent *event)
     }
 //! [6]
 }
-
-
-//void WigglyWidget::setHideShow(int flagShow)
-//{
-//    //qDebug()<<flagShow;
-//    if(flagShow){
-//        show();
-//        //qDebug()<<"show";
-//    }
-//    else{
-//        hide();
-//        //qDebug()<<"hide";
-//    }
-//}

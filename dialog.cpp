@@ -2,7 +2,7 @@
 #include "dialog.h"
 
 Dialog::Dialog(QWidget *parent)
-    : QDialog(parent),dialog_show(true)
+    : QDialog(parent)
 {
 
     config = new QSettings("localtrans.ini", QSettings::IniFormat);
@@ -64,7 +64,7 @@ Dialog::Dialog(QWidget *parent)
     //无边框
     setWindowFlag(Qt::FramelessWindowHint);
     //置顶
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint | Qt::Tool);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint); // | Qt::Tool);
     show();
 
 
@@ -159,9 +159,11 @@ Dialog::Dialog(QWidget *parent)
     {
     QAction *pAction = new QAction(pMenu);
     pAction->setText("Hide/Show");//设置文字
+    pAction->setCheckable(true);
+    pAction->setChecked(true);
     //pAction->setIcon(QIcon(":/new/prefix1/forbidPNG"));//设置图标
     pMenu->addAction(pAction);//action添加到menu中
-    connect(pAction,SIGNAL(triggered()),this,SLOT(HideDialog()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
+    connect(pAction,SIGNAL(triggered()),wigglyWidget,SLOT(widgetVis()));//关联事件响应函数，选择菜单中的action后，触发槽函数执行
     }
 
     //主菜单添加子菜单
@@ -193,13 +195,6 @@ void Dialog::mapChooser()
     config->setValue("jpdic",jpfile);
     config->setValue("zhdic",zhfile);
     config->sync();
-}
-
-void Dialog::HideDialog()
-{
-    dialog_show=!dialog_show;
-    //pb1->setVisible(true);
-    wigglyWidget->setVisible(dialog_show);
 }
 
 void Dialog::BGset()

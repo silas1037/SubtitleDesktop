@@ -82,7 +82,6 @@ public:
     QAction *pAction;
     QMenu *strokeMenu;
 
-    bool dialog_show;
     QVBoxLayout *layout;
     QHBoxLayout *hl2;
     QPushButton * pb1;
@@ -92,12 +91,9 @@ public:
 public slots:
     void resizedialog(float x, float y);
     void overScreen();
-    //void fontColorChooser();
-    //void fontChooser();
     void mapChooser();
     void stringReloads();
     void BGset();
-    void HideDialog();
 
 //protected:
 //    void enterEvent(QEvent *);
