@@ -70,7 +70,7 @@ WigglyWidget::WigglyWidget(QWidget *parent)
     //newFont.setPointSize(newFont.pointSize() + 10);
     setFont(subFont);
     timer.start(60, this);
-    screenX=QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()-30;
+    screenX=QRect(QApplication::desktop()->availableGeometry(this)).bottomRight().x()-30;
 
     fontColor = QColor(200,200,200);
     strokeColor = QColor(0,0,0);
@@ -140,7 +140,7 @@ void WigglyWidget::paintEvent(QPaintEvent * /* event */)
 void WigglyWidget::ReSize()
 {
     //Textractor 均不能工作
-    screenX=QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()-30;
+    screenX=QRect(QApplication::desktop()->availableGeometry(this)).bottomRight().x()-30;
 
 
     QFontMetrics metrics(subFont);

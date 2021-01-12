@@ -89,7 +89,7 @@ signals:
 public slots:
     void widgetVis(){widvis=!widvis;setVisible(widvis);}
     void setfontColor(){
-        QColor rgb = QColorDialog::getRgba(fontColor.rgba());
+        QColor rgb = QColorDialog::getColor(fontColor);
         if(rgb.isValid()) fontColor=rgb;
         if(autoStrokeColor){ strokeColor.setRgb((rgb.red()<128)?255:0,(rgb.green()<128)?255:0,(rgb.blue()<128)?255:0);
         strokeColor=strokeColor.darker();}
@@ -100,7 +100,7 @@ public slots:
         if(ok){ fontback.setBold(true);subFont=fontback;}
     }
     void strokeColorChooser(){
-        QColor rgb = QColorDialog::getRgba(fontColor.rgba());
+        QColor rgb = QColorDialog::getColor(fontColor);
         if(rgb.isValid()) strokeColor=rgb;
     }
     void setstrokeShow(){strokeShow=!strokeShow;}

@@ -8,7 +8,7 @@ QT += widgets
 #SOURCES       += \
 #LocalSub.cpp \
 #                LocalSubImpl.cpp \
-##                VisualExtension.cpp
+#                VisualExtension.cpp
 
 LIBS+=-luser32
 

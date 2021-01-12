@@ -1,11 +1,13 @@
 ﻿
 #include "dialog.h"
-
+#ifdef DLLFLAG
+#include "LocalSub.h"
+#endif
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
 {
-
     config = new QSettings("localtrans.ini", QSettings::IniFormat);
+    config->setIniCodec("UTF-8");
     jpfile = config->value("jpdic","jpdic.txt").toString();
     zhfile = config->value("zhdic","zhdic.txt").toString();
     config->setValue("jpdic",jpfile);
@@ -48,7 +50,7 @@ Dialog::Dialog(QWidget *parent)
     connect(wigglyWidget, &WigglyWidget::setMainXY, this, &Dialog::resizedialog); //set xy
 
     //初始位置
-    move(QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()/3,QRect(QApplication::desktop()->availableGeometry()).bottomRight().y());
+    move(QRect(QApplication::desktop()->availableGeometry(this)).bottomRight().x()/3,QRect(QApplication::desktop()->availableGeometry(this)).bottomRight().y());
     //setWindowTitle(tr("Wiggly"));
     resize(360, 145); //-280 -335
     lineEdit->setText(QString::fromLocal8Bit("Bishojo Game 美少女游戏"));
@@ -181,28 +183,36 @@ Dialog::Dialog(QWidget *parent)
     //创建一个QSyStemTrayIcon的对象.
     QSystemTrayIcon *m_trayIcon = new QSystemTrayIcon();
     //设置图标.
-    m_trayIcon->setIcon(QIcon(":/G.ico"));
+    m_trayIcon->setIcon(QIcon("G.ico"));
     //设置右键菜单.
     m_trayIcon->setContextMenu(pMenu);
     m_trayIcon->show();
+
+    connect(this,&Dialog::jOverScreen,this, &Dialog::overScreen);
 }
 void Dialog::stringReloads()
 {
-
+#ifdef DLLFLAG
+    loadText();
+#endif
 }
 void Dialog::mapChooser()
 {
-    QString jpdicNew = QFileDialog::getOpenFileName(NULL,QString::fromLocal8Bit("选择日文文本"),".","*.*");
+    QString jpdicNew = QFileDialog::getOpenFileName(NULL,QString::fromLocal8Bit("选择日文文本"),".","(*.txt);(*.*)");
     if(jpdicNew!=""){
         jpfile = jpdicNew;
     }
-    QString zhdicNew = QFileDialog::getOpenFileName(NULL,QString::fromLocal8Bit("选择中文文本"),".","*.*");
+    QString zhdicNew = QFileDialog::getOpenFileName(NULL,QString::fromLocal8Bit("选择中文文本"),".","(*.txt);(*.*)");
     if(zhdicNew!=""){
         zhfile = zhdicNew;
     }
+    qDebug()<<jpfile<<zhfile;
     config->setValue("jpdic",jpfile);
     config->setValue("zhdic",zhfile);
     config->sync();
+#ifdef DLLFLAG
+    loadText();
+#endif
 }
 
 void Dialog::BGset()
@@ -284,7 +294,7 @@ void Dialog::mouseMoveEvent(QMouseEvent *event)
 
         //方法1：
                 QDesktopWidget* desktop = QApplication::desktop();
-                QRect windowRect(desktop->availableGeometry());
+                QRect windowRect(desktop->availableGeometry(this));
                 QRect widgetRect(this->geometry());
         //以下是防止窗口拖出可见范围外
         QPoint point=m_windowPoint + relativePos ;
@@ -326,10 +336,10 @@ void Dialog::overScreen()
     m_windowPoint = this->frameGeometry().topLeft();
     //方法1：
             QDesktopWidget* desktop = QApplication::desktop();
-            QRect windowRect(desktop->availableGeometry());
+            QRect windowRect(desktop->availableGeometry(this));
             QRect widgetRect(this->geometry());
 
-            //qDebug()<<QRect(QApplication::desktop()->availableGeometry()).bottomRight().x()<<QRect(QApplication::desktop()->availableGeometry()).bottomRight().y();
+            //qDebug()<<QRect(QApplication::desktop()->availableGeometry(this)).bottomRight().x()<<QRect(QApplication::desktop()->availableGeometry(this)).bottomRight().y();
 
     //以下是防止窗口拖出可见范围外
     QPoint point=m_windowPoint;
@@ -356,6 +366,12 @@ void Dialog::overScreen()
                 point = QPoint(x,point.y());
             }
             move(point);
+}
+void Dialog::inputUpdate(std::wstring newText)
+{
+    wigglyWidget->setWText(newText);
+    wigglyWidget->ReSize();
+    emit jOverScreen();
 }
 
 void Dialog::mouseReleaseEvent(QMouseEvent *event)
